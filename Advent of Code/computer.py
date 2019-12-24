@@ -10,10 +10,9 @@ class Computer:
         elif opcode in [3,4]:
             params = [0] * 1
         elif opcode in [5,6]:
-            params [0] * 2
+            params = [0] * 2
         for par, index in zip(code_with_params[-3::-1], itertools.count()):
             params[index] = int(par)
-
         return opcode, params
 
 
@@ -32,7 +31,7 @@ class Computer:
             try:
                 op, param_modes = self.parse_opcode(intcode, index)
                 parameters = self.get_params(intcode, index, op)
-
+                #print(intcode[index], op, param_modes, parameters)
                 if op == 1:
                     total = 0
                     for mode, val in zip(param_modes, parameters[:-1]):
@@ -61,17 +60,38 @@ class Computer:
                     if val1 != 0:
                         index = intcode[parameters[-1]] if param_modes[-1] == 0 else parameters[-1]
                     else:
-                        index += 2
+                        index += 3
                 
                 elif op == 6:
                     val1 = intcode[parameters[0]] if param_modes[0] == 0 else parameters[0]
                     if val1 == 0:
                         index = intcode[parameters[-1]] if param_modes[-1] == 0 else parameters[-1]
                     else:
-                        index += 2
+                        index += 3
+
+                elif op == 7:
+                    val1 = intcode[parameters[0]] if param_modes[0] == 0 else parameters[0]
+                    val2 = intcode[parameters[1]] if param_modes[1] == 0 else parameters[1]
+                    if val1 < val2:
+                        intcode[parameters[-1]] = 1
+                    else:
+                        intcode[parameters[-1]] = 0
+                    index += 4
+
+                elif op == 8:
+                    val1 = intcode[parameters[0]] if param_modes[0] == 0 else parameters[0]
+                    val2 = intcode[parameters[1]] if param_modes[1] == 0 else parameters[1]
+                    if val1 == val2:
+                        intcode[parameters[-1]] = 1
+                    else:
+                        intcode[parameters[-1]] = 0
+                    index += 4
 
             except:
                 print("ran into error")
                 break
 
 # Some test cases
+test1 = [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
+comp = Computer()
+comp.solve(test1)
